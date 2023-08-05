@@ -25,6 +25,8 @@ fastify.post('/', async function handler (request, reply) {
   );
 
   await channel.consume(RESPONSE_QUEUE, async (msg) => {
+    if (correlationId !== msg.properties.correlationId) return;
+
     const parsedMsg = JSON.parse(msg.content.toString());
     reply.send(parsedMsg)
 
