@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  m1_service:
+    build: ./m1
+    volumes:
+      - ./m1/:/app/
+    ports:
+      - 3001:3000
+    depends_on:
+      - m2_service
+
+  m2_service:
+    build: ./m2
+    volumes:
+      - ./m2/:/app/
+    ports:
+      - 3002:3000
+
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - 15672:15672

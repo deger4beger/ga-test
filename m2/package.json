@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"scripts": {
-		"dev": "nodemon index.js"
+		"dev": "nodemon ./src/index.js"
 	},
 	"dependencies": {
 		"fastify": "^4.21.0"
