@@ -6,7 +6,7 @@ const fastify = Fastify({
 })
 
 fastify.get('/', async function handler (request, reply) {
-  return { hello: 'Hello from m1 microservice efwffw rgegegegeeger !' };
+  return { hello: 'Hello from m1 microservice !' };
 })
 
 try {

@@ -7,6 +7,6 @@ COPY package.json .
 RUN npm i -g pnpm
 RUN pnpm install
 
-COPY . ./
+COPY ./src ./src/
 
 CMD ["pnpm", "dev:docker"]

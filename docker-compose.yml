@@ -5,19 +5,20 @@ services:
     build: ./m1
     volumes:
       - ./m1/src:/app/src
-      - /app/node_modules
     ports:
       - 3001:8000
     depends_on:
       - m2_service
+      - rabbitmq
 
   m2_service:
     build: ./m2
     volumes:
       - ./m2/src:/app/src
-      - /app/node_modules
     ports:
       - 8000
+    depends_on:
+      - rabbitmq
 
   rabbitmq:
     image: rabbitmq:3-alpine
