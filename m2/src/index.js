@@ -8,31 +8,38 @@ const fastify = Fastify({
 const REQUEST_QUEUE = "request";
 const RESPONSE_QUEUE = "response";
 
-try {
-  await (async () => {
-    const connection = await amqp.connect("amqp://admin:admin@rabbitmq:5672");
-    fastify.decorate("amqp", connection);
-  })();
+const fastifyApp = async () => {
+  try {
+    await (async () => {
+      const connection = await amqp.connect("amqp://admin:admin@rabbitmq:5672");
+      fastify.decorate("amqp", connection);
+    })();
 
-  await fastify.listen({ port: 8000, host: "0.0.0.0" });
+    await fastify.listen({ port: 8000, host: "0.0.0.0" });
 
 
-  const channel = await fastify.amqp.createChannel();
-  await channel.assertQueue(REQUEST_QUEUE);
-  await channel.assertQueue(RESPONSE_QUEUE);
+    const channel = await fastify.amqp.createChannel();
+    await channel.assertQueue(REQUEST_QUEUE);
+    await channel.assertQueue(RESPONSE_QUEUE);
 
-  await channel.consume(REQUEST_QUEUE, (msg) => {
-    try {
-      const textMsg = JSON.parse(msg.content.toString());
+    await channel.consume(REQUEST_QUEUE, (msg) => {
+      try {
+        const textMsg = JSON.parse(msg.content.toString());
 
-      channel.sendToQueue(RESPONSE_QUEUE, Buffer.from(JSON.stringify({
-        fromRabbitM2Microservice: textMsg
-      })), { correlationId: msg.properties.correlationId })
-    } catch { }
-  }, { noAck: true });
+        channel.sendToQueue(RESPONSE_QUEUE, Buffer.from(JSON.stringify({
+          fromRabbitM2Microservice: textMsg
+        })), { correlationId: msg.properties.correlationId })
+      } catch { }
+    }, { noAck: true });
 
-} catch (err) {
-  await fastify.amqp?.close();
-  fastify.log.error(err);
-  process.exit(1);
+  } catch (err) {
+    await fastify.amqp?.close();
+    fastify.log.error(err);
+
+    setTimeout(() => {
+      fastifyApp();
+    }, 5000)
+  }
 }
+
+fastifyApp();

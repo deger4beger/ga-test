@@ -39,18 +39,25 @@ fastify.post('/', async function handler (request, reply) {
   }
 })
 
-try {
+const fastifyApp = async () => {
+  try {
 
-  await (async () => {
-    const connection = await amqp.connect("amqp://admin:admin@rabbitmq:5672");
-    fastify.decorate("amqp", connection);
-  })();
+    await (async () => {
+      const connection = await amqp.connect("amqp://admin:admin@rabbitmq:5672");
+      fastify.decorate("amqp", connection);
+    })();
 
-  await fastify.listen({ port: 8000, host: "0.0.0.0" });
-} catch (err) {
+    await fastify.listen({ port: 8000, host: "0.0.0.0" });
+  } catch (err) {
 
-  await fastify.amqp?.close();
+    await fastify.amqp?.close();
 
-  fastify.log.error(err);
-  process.exit(1);
+    fastify.log.error(err);
+
+    setTimeout(() => {
+      fastifyApp();
+    }, 5000)
+  }
 }
+
+fastifyApp();
