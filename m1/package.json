@@ -1,7 +1,8 @@
 {
 	"type": "module",
 	"scripts": {
-		"dev": "nodemon ./src/index.js"
+		"dev": "nodemon ./src/index.js",
+		"dev:docker": "nodemon ./src/index.js -L"
 	},
 	"dependencies": {
 		"fastify": "^4.21.0"
