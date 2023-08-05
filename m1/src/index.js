@@ -8,25 +8,23 @@ const fastify = Fastify({
 const REQUEST_QUEUE = "request";
 const RESPONSE_QUEUE = "response";
 
-fastify.get('/', async function handler (request, reply) {
+fastify.post('/', async function handler (request, reply) {
 
   const channel = await this.amqp.createChannel();
   await channel.assertQueue(REQUEST_QUEUE);
   await channel.assertQueue(RESPONSE_QUEUE);
 
-  await channel.sendToQueue(REQUEST_QUEUE, Buffer.from("some_task"))
-  console.log('MSG sent');
+  await channel.sendToQueue(REQUEST_QUEUE, Buffer.from(JSON.stringify(request.body)))
 
   await channel.consume(RESPONSE_QUEUE, async (msg) => {
-    const textMsg = msg.content.toString();
-    console.log('MSG recieved', textMsg);
-    channel.ack(msg);
+    const parsedMsg = JSON.parse(msg.content.toString());
 
-    reply.send({ rabbit: textMsg })
+    reply.send(parsedMsg)
+
     await channel.close();
-  }, { noAck: false });
+  }, { noAck: true });
 
-  return reply;
+  await reply;
 })
 
 try {
@@ -39,7 +37,7 @@ try {
   await fastify.listen({ port: 8000, host: "0.0.0.0" });
 } catch (err) {
 
-  await fastify.amqp.close();
+  await fastify.amqp?.close();
 
   fastify.log.error(err);
   process.exit(1);
