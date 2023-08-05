@@ -26,7 +26,7 @@ try {
 
     channel.sendToQueue(RESPONSE_QUEUE, Buffer.from(JSON.stringify({
       fromRabbitM2Microservice: textMsg
-    })))
+    })), { correlationId: msg.properties.correlationId })
   }, { noAck: true });
 
 } catch (err) {
