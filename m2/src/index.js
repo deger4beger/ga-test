@@ -22,11 +22,13 @@ try {
   await channel.assertQueue(RESPONSE_QUEUE);
 
   await channel.consume(REQUEST_QUEUE, (msg) => {
-    const textMsg = JSON.parse(msg.content.toString());
+    try {
+      const textMsg = JSON.parse(msg.content.toString());
 
-    channel.sendToQueue(RESPONSE_QUEUE, Buffer.from(JSON.stringify({
-      fromRabbitM2Microservice: textMsg
-    })), { correlationId: msg.properties.correlationId })
+      channel.sendToQueue(RESPONSE_QUEUE, Buffer.from(JSON.stringify({
+        fromRabbitM2Microservice: textMsg
+      })), { correlationId: msg.properties.correlationId })
+    } catch { }
   }, { noAck: true });
 
 } catch (err) {

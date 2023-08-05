@@ -3,6 +3,7 @@ version: '3.7'
 services:
   m1_service:
     build: ./m1
+    restart: always
     volumes:
       - ./m1/src:/app/src
     ports:
@@ -13,6 +14,7 @@ services:
 
   m2_service:
     build: ./m2
+    restart: always
     volumes:
       - ./m2/src:/app/src
     ports:
@@ -27,4 +29,4 @@ services:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
     ports:
-      - 5672:5672
+      - 5672
