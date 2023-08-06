@@ -29,9 +29,10 @@ fastify.post('/', async function handler (request, reply) {
 
       const parsedMsg = JSON.parse(msg.content.toString());
       reply.send(parsedMsg)
+      channel.ack(msg);
 
       await channel.close();
-    }, { noAck: true });
+    });
 
     await reply;
   } catch {
